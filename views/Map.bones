@@ -29,7 +29,7 @@ view.prototype.render = function(init) {
     // Fetch data from MapBox.com about the remote map
     wax.tilejson(url, _(function(tilejson) {
         // Insert remote map as a layer
-        this.map.insertLayerAt(0,new MM.Layer(new wax.mm.connector(tilejson)));
+        this.map.insertLayerAt(0, new MM.Layer(new wax.mm.connector(tilejson)));
         this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
     }).bind(this));
 
