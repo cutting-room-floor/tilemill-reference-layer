@@ -5,8 +5,7 @@ view.prototype.initialize = function() {
         'render',
         'attach',
         'mapZoom',
-        'fullscreen',
-        'baseSync'
+        'fullscreen'
     );
     this.model.bind('saved', this.attach);
     this.model.bind('poll', this.attach);
@@ -14,27 +13,25 @@ view.prototype.initialize = function() {
 };
 
 view.prototype.render = function(init) {
+
     if (!MM) throw new Error('ModestMaps not found.');
 
     $(this.el).html(templates.Map());
 
-    this.map = new MM.Map('map',
-        new wax.mm.connector(this.model.attributes));
+    this.map = new MM.Map('map',new wax.mm.connector(this.model.attributes));
 
-    // Add a new map for the baselayer
-    this.mapBase = new MM.Map('map-base',
-        new wax.mm.connector({
-            tilejson: '1.0.0',
-            scheme: 'xyz',
-            tiles: [
-                'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png',
-                'http://b.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png',
-                'http://c.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png',
-                'http://d.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png'
-            ]
-        }), null, null);
+    // Indentify which layer is the TileMill layer
+    this.map.tmLayer = 0;
 
-    this.mapBase.setZoomRange(0, 17);
+    // Remote map endpoint
+    var url = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
+
+    // Fetch data from MapBox.com about the remote map
+    wax.tilejson(url, _(function(tilejson) {
+        // Insert remote map as a layer
+        this.map.insertLayerAt(0,new MM.Layer(new wax.mm.connector(tilejson)));
+        this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
+    }).bind(this));
 
     // Add references to all controls onto the map object.
     // Allows controls to be removed later on.
@@ -49,7 +46,7 @@ view.prototype.render = function(init) {
     // Add image error request handler. "Dedupes" image errors by
     // checking against last received image error so as to not spam
     // the user with the same errors message for every image request.
-    this.map.getLayerAt(0).requestManager.addCallback('requesterror', _(function(manager, url) {
+    this.map.getLayerAt(this.map.tmLayer).requestManager.addCallback('requesterror', _(function(manager, url) {
         $.ajax(url, { error: _(function(resp) {
             if (resp.responseText === this._error) return;
             this._error = resp.responseText;
@@ -66,7 +63,6 @@ view.prototype.render = function(init) {
     this.map.addCallback('panned', this.mapZoom);
     this.map.addCallback('extentset', this.mapZoom);
     this.map.addCallback('resized', this.fullscreen);
-    this.map.addCallback('drawn', this.baseSync);
     this.mapZoom({element: this.map.div});
     return this;
 };
@@ -92,7 +88,7 @@ view.prototype.mapZoom = function(e) {
 view.prototype.attach = function() {
     this._error = '';
 
-    var layer = this.map.getLayerAt(0);
+    var layer = this.map.getLayerAt(this.map.tmLayer);
     layer.provider.options.tiles = this.model.get('tiles');
     layer.provider.options.minzoom = this.model.get('minzoom');
     layer.provider.options.maxzoom = this.model.get('maxzoom');
@@ -110,11 +106,6 @@ view.prototype.attach = function() {
         $(this.map.controls.legend.element()).remove();
     }
 };
-
-view.prototype.baseSync = function(e) {
-    this.mapBase.setCenterZoom(this.map.getCenter(), this.map.getZoom());
-};
-
 
 // Hook in to project view with an augment.
 views.Project.augment({ render: function(p) {
