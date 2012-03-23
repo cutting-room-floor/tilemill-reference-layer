@@ -1,7 +1,7 @@
 {
     "name": "tilemill-mapbox-streets",
     "description": "Add MapBox Streets as a base layer.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {"tilemill":"0.9.x"},
     "keywords": ["tilemill"]
 }
