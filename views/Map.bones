@@ -23,11 +23,15 @@ view.prototype.render = function(init) {
     // Indentify which layer is the TileMill layer
     this.map.tmLayer = 0;
 
-    // Remote map endpoint
-    var url = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
-
+    // Get remote map endpoint or set default
+    if (!this.model.get('_basemap')) {
+        this.model.set({
+            _basemap: 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp'
+        });
+    }
+        
     // Fetch data from MapBox.com about the remote map
-    wax.tilejson(url, _(function(tilejson) {
+    wax.tilejson(this.model.get('_basemap'), _(function(tilejson) {
         // Insert remote map as a layer
         this.map.insertLayerAt(0, new MM.Layer(new wax.mm.connector(tilejson)));
         this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
