@@ -13,12 +13,11 @@ view.prototype.initialize = function() {
 };
 
 view.prototype.render = function(init) {
-
     if (!MM) throw new Error('ModestMaps not found.');
 
     $(this.el).html(templates.Map());
 
-    this.map = new MM.Map('map',new wax.mm.connector(this.model.attributes));
+    this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
 
     // Indentify which layer is the TileMill layer
     this.map.tmLayer = 0;
@@ -29,18 +28,22 @@ view.prototype.render = function(init) {
             _basemap: 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp'
         });
     }
-        
+ 
     // Fetch data from MapBox.com about the remote map
     wax.tilejson(this.model.get('_basemap'), _(function(tilejson) {
         // Insert remote map as a layer
-        this.map.insertLayerAt(0, new MM.Layer(new wax.mm.connector(tilejson)));
+        this.map.insertLayerAt(0, new wax.mm.connector(tilejson));
         this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
     }).bind(this));
 
     // Add references to all controls onto the map object.
     // Allows controls to be removed later on.
     this.map.controls = {
-        interaction: wax.mm.interaction(this.map, this.model.attributes),
+        interaction: wax.mm.interaction()
+            .map(this.map)
+            .tilejson(this.model.attributes)
+            .on(wax.tooltip()
+                .parent(this.map.parent).events()),
         legend: wax.mm.legend(this.map, this.model.attributes),
         zoombox: wax.mm.zoombox(this.map),
         zoomer: wax.mm.zoomer(this.map).appendTo(this.map.parent),
@@ -63,6 +66,9 @@ view.prototype.render = function(init) {
         center[1],
         center[0]),
         center[2]);
+    this.map.setZoomRange(
+        this.model.get('minzoom'),
+        this.model.get('maxzoom'));
     this.map.addCallback('zoomed', this.mapZoom);
     this.map.addCallback('panned', this.mapZoom);
     this.map.addCallback('extentset', this.mapZoom);
@@ -98,10 +104,13 @@ view.prototype.attach = function() {
     layer.provider.options.maxzoom = this.model.get('maxzoom');
     layer.setProvider(layer.provider);
 
-    this.map.controls.interaction.remove();
-    this.map.controls.interaction = wax.mm.interaction(
-        this.map,
-        this.model.attributes);
+    layer.provider.setZoomRange(layer.provider.options.minzoom,
+                          layer.provider.options.maxzoom)
+
+    this.map.setZoomRange(layer.provider.options.minzoom,
+                          layer.provider.options.maxzoom)
+
+    this.map.controls.interaction.tilejson(this.model.attributes);
 
     if (this.model.get('legend')) {
         this.map.controls.legend.content(this.model.attributes);
