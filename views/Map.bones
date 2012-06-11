@@ -9,6 +9,7 @@ view.prototype.initialize = function() {
     );
     this.model.bind('saved', this.attach);
     this.model.bind('poll', this.attach);
+    this.model.bind('change:_basemap', this.render);
     this.render().attach();
 };
 
