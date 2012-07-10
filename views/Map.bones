@@ -8,8 +8,9 @@ view.prototype.initialize = function() {
         'fullscreen',
         'renderAttach'
     );
-    this.model.bind('saved', this.renderAttach);
+    this.model.bind('saved', this.attach);
     this.model.bind('poll', this.attach);
+    this.model.bind('change:_basemap', this.renderAttach);
     this.render().attach();
 };
 
@@ -22,7 +23,7 @@ view.prototype.render = function(init) {
 
     $(this.el).html(templates.Map());
 
-    this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
+    var map = this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
 
     // Indentify which layer is the TileMill layer
     this.map.tmLayer = 0;
@@ -79,6 +80,18 @@ view.prototype.render = function(init) {
     this.map.addCallback('extentset', this.mapZoom);
     this.map.addCallback('resized', this.fullscreen);
     this.mapZoom({element: this.map.div});
+
+
+    // Wait for map element to autosize, then draw map
+    (function waitAndDraw() {
+       var el = document.getElementById('map');
+       if (!el.offsetWidth || !el.offsetHeight) {
+            window.setTimeout(waitAndDraw, 100);
+       } else {
+            map.draw();
+       }
+    })();
+
     return this;
 };
 
