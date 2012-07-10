@@ -5,36 +5,42 @@ view.prototype.initialize = function() {
         'render',
         'attach',
         'mapZoom',
-        'fullscreen'
+        'fullscreen',
+        'renderAttach'
     );
     this.model.bind('saved', this.attach);
     this.model.bind('poll', this.attach);
+    this.model.bind('change:_basemap', this.renderAttach);
     this.render().attach();
 };
+
+view.prototype.renderAttach = function() {
+    this.render().attach();
+}
 
 view.prototype.render = function(init) {
     if (!MM) throw new Error('ModestMaps not found.');
 
     $(this.el).html(templates.Map());
 
-    this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
+    var map = this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
 
     // Indentify which layer is the TileMill layer
     this.map.tmLayer = 0;
 
     // Get remote map endpoint or set default
-    if (!this.model.get('_basemap')) {
-        this.model.set({
-            _basemap: 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp'
-        });
-    }
+    var basemap = this.model.get('_basemap');
+    if (typeof basemap === 'undefined')
+        basemap = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
  
     // Fetch data from MapBox.com about the remote map
-    wax.tilejson(this.model.get('_basemap'), _(function(tilejson) {
-        // Insert remote map as a layer
-        this.map.insertLayerAt(0, new wax.mm.connector(tilejson));
-        this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
-    }).bind(this));
+    if (basemap) {
+        wax.tilejson(basemap, _(function(tilejson) {
+            // Insert remote map as a layer
+            this.map.insertLayerAt(0, new wax.mm.connector(tilejson));
+            this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
+        }).bind(this));
+    }
 
     // Add references to all controls onto the map object.
     // Allows controls to be removed later on.
@@ -74,6 +80,18 @@ view.prototype.render = function(init) {
     this.map.addCallback('extentset', this.mapZoom);
     this.map.addCallback('resized', this.fullscreen);
     this.mapZoom({element: this.map.div});
+
+
+    // Wait for map element to autosize, then draw map
+    (function waitAndDraw() {
+       var el = document.getElementById('map');
+       if (!el.offsetWidth || !el.offsetHeight) {
+            window.setTimeout(waitAndDraw, 100);
+       } else {
+            map.draw();
+       }
+    })();
+
     return this;
 };
 
@@ -119,13 +137,3 @@ view.prototype.attach = function() {
         $(this.map.controls.legend.element()).remove();
     }
 };
-
-// Hook in to project view with an augment.
-views.Project.augment({ render: function(p) {
-    p.call(this);
-    new views.Map({
-        el:this.$('.map'),
-        model:this.model
-    });
-    return this;
-}});
