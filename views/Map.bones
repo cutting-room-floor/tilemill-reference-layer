@@ -5,13 +5,17 @@ view.prototype.initialize = function() {
         'render',
         'attach',
         'mapZoom',
-        'fullscreen'
+        'fullscreen',
+        'renderAttach'
     );
-    this.model.bind('saved', this.attach);
+    this.model.bind('saved', this.renderAttach);
     this.model.bind('poll', this.attach);
-    this.model.bind('change:_basemap', this.render);
     this.render().attach();
 };
+
+view.prototype.renderAttach = function() {
+    this.render().attach();
+}
 
 view.prototype.render = function(init) {
     if (!MM) throw new Error('ModestMaps not found.');
@@ -120,13 +124,3 @@ view.prototype.attach = function() {
         $(this.map.controls.legend.element()).remove();
     }
 };
-
-// Hook in to project view with an augment.
-views.Project.augment({ render: function(p) {
-    p.call(this);
-    new views.Map({
-        el:this.$('.map'),
-        model:this.model
-    });
-    return this;
-}});

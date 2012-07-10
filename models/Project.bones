@@ -11,3 +11,5 @@ model = models.Project.augment({
 model.prototype.schema.properties._basemap = {
     type: 'string'
 };
+
+model.prototype.defaults._basemap = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
