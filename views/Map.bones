@@ -24,18 +24,18 @@ view.prototype.render = function(init) {
     this.map.tmLayer = 0;
 
     // Get remote map endpoint or set default
-    if (!this.model.get('_basemap')) {
-        this.model.set({
-            _basemap: 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp'
-        });
-    }
+    var basemap = this.model.get('_basemap');
+    if (typeof basemap === 'undefined')
+        basemap = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
  
     // Fetch data from MapBox.com about the remote map
-    wax.tilejson(this.model.get('_basemap'), _(function(tilejson) {
-        // Insert remote map as a layer
-        this.map.insertLayerAt(0, new wax.mm.connector(tilejson));
-        this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
-    }).bind(this));
+    if (basemap) {
+        wax.tilejson(basemap, _(function(tilejson) {
+            // Insert remote map as a layer
+            this.map.insertLayerAt(0, new wax.mm.connector(tilejson));
+            this.map.tmLayer = 1; // Indicate that the TileMill layer has changed
+        }).bind(this));
+    }
 
     // Add references to all controls onto the map object.
     // Allows controls to be removed later on.
