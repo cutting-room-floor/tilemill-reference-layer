@@ -29,9 +29,7 @@ view.prototype.render = function(init) {
     this.map.tmLayer = 0;
 
     // Get remote map endpoint or set default
-    var basemap = this.model.get('_basemap');
-    if (typeof basemap === 'undefined')
-        basemap = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets.jsonp';
+    var basemap = (this.model.get('_basemap')) ? this.model.tileJSON() : undefined;
  
     // Fetch data from MapBox.com about the remote map
     if (basemap) {
