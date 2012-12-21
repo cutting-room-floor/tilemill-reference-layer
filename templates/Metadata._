@@ -103,9 +103,9 @@ var get = _(project.get).bind(project);
   <% } %>
   <% if (model == project) { %>
   <li>
-    <label for='_basemap'>Reference layer</label>
+    <label for='_basemap'>MapBox layer</label>
     <input type='text' name='_basemap' class='stretch' value='<%= get('_basemap') %>' />
-    <small class='description'>TileJSON URL for reference layer.</small>
+    <small class='description'>Map ID for reference layer.</small>
   </li>
   <% } %>
   <% if (model !== project && type === 'tiles') { %>
