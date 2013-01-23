@@ -25,6 +25,18 @@ view.prototype.render = function(init) {
 
     var map = this.map = new MM.Map('map', new wax.mm.connector(this.model.attributes));
 
+    // Adapted location interaction - opens in new tab
+    function locationOn(o) {
+        if ((o.e.type === 'mousemove' || !o.e.type)) {
+            return;
+        } else {
+            var loc = o.formatter({ format: 'location' }, o.data);
+            if (loc) {
+                window.open(loc);
+            }
+        }
+    }
+
     // Indentify which layer is the TileMill layer
     this.map.tmLayer = 0;
 
@@ -54,7 +66,8 @@ view.prototype.render = function(init) {
             .map(this.map)
             .tilejson(this.model.attributes)
             .on(wax.tooltip()
-                .parent(this.map.parent).events()),
+                .parent(this.map.parent).events())
+            .on({on: locationOn}),
         legend: wax.mm.legend(this.map, this.model.attributes),
         zoombox: wax.mm.zoombox(this.map),
         zoomer: wax.mm.zoomer(this.map).appendTo(this.map.parent),
@@ -64,8 +77,8 @@ view.prototype.render = function(init) {
     // Add image error request handler. "Dedupes" image errors by
     // checking against last received image error so as to not spam
     // the user with the same errors message for every image request.
-    this.map.getLayerAt(this.map.tmLayer).requestManager.addCallback('requesterror', _(function(manager, url) {
-        $.ajax(url, { error: _(function(resp) {
+    this.map.getLayerAt(this.map.tmLayer).requestManager.addCallback('requesterror', _(function(manager, msg) {
+        $.ajax(msg.url, { error: _(function(resp) {
             if (resp.responseText === this._error) return;
             this._error = resp.responseText;
             new views.Modal(resp);
@@ -111,6 +124,7 @@ view.prototype.fullscreen = function(e) {
     } else {
         $('div.project').removeClass('fullscreen');
     }
+    this.map.draw();
 };
 
 // Set zoom display.
@@ -141,4 +155,7 @@ view.prototype.attach = function() {
     } else {
         $(this.map.controls.legend.element()).remove();
     }
+
+    this.map.draw();
+    this.mapZoom();
 };
