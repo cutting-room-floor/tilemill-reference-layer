@@ -1,6 +1,6 @@
 // Extend the Project model schema to allow for extra metadata.
 model = models.Project.augment({
-    mapboxTileJSON: function(mapID) {
+    mapboxTileJSON: function(parent, mapID) {
         return 'http://a.tiles.mapbox.com/v3/' + mapID + '.jsonp';
     }
 });
