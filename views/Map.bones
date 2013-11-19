@@ -48,7 +48,6 @@ view.prototype.render = function(init) {
         //mapbox IDs are of the form 'account.mapid', where account and mapid can't contain url-reserved chars
         if (basemap.match(/^[^/.]+\.[^/.]+$/)) {
             basemap = this.model.mapboxTileJSON(basemap);
-            this.model.set({ '_basemap': basemap });
         }
 
         wax.tilejson(basemap, _(function(tilejson) {
