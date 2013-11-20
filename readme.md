@@ -1,6 +1,6 @@
 # Reference Layer for TileMill
 
-This TileMill plugin adds Mapbox Streets or a custom map as a reference layer to your TileMill projects.
+This TileMill plugin adds a custom map as a reference layer to your TileMill projects.
 
 ## Installation
 
