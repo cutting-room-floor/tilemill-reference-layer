@@ -22,7 +22,7 @@ __Note:__ This plugin is not tested to work with other plugins.
 
 ![](https://f.cloud.github.com/assets/20300/1507626/eaeb09a2-4995-11e3-9bfb-038aa0547da3.png)
 
-- Go to a projects settings, and enter a map ID from your Mapbox.com map in the Mapbox Layer field.
+- Go to a projects settings, and enter a map ID from your Mapbox.com map, or a URL for a TileJSON Service, in the Reference Layer field.
 
 ![](https://f.cloud.github.com/assets/20300/1507627/ecdc5ed2-4995-11e3-824f-2a4fda01e9b8.png)
 
