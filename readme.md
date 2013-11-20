@@ -2,6 +2,8 @@
 
 This TileMill plugin adds a custom map as a reference layer to your TileMill projects.
 
+This reference layer will be visible while designing & previewing a map, but will not be included in any exports.
+
 ## Installation
 
 The plugin should be available from the Plugins panel in TileMill.
