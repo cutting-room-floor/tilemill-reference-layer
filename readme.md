@@ -32,6 +32,8 @@ __Note:__ This plugin is not tested to work with other plugins.
   
 ![](https://i.cloudup.com/FkgThf6MV4-3000x3000.png)
 
+- If you have a custom tileset available elsewhere, you'll need a TileJSON service to describe this map. You can use the URL of this service for the Reference Layer field.
+
 - Design a map with a transparent `Map` background
 
 - Upload your map to [Mapbox](http://mapbox.com)
