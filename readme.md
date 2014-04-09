@@ -4,7 +4,15 @@ This TileMill plugin adds Mapbox Streets or a custom map as a reference layer to
 
 ## Installation
 
-The plugin should be available from the Plugins panel in TileMill. You can also install it manually by cloning this repository into your TileMill plugins directory.
+The plugin should be available from the Plugins panel in TileMill.
+
+You can also install it manually by cloning this repository into your TileMill plugins directory.The plugins directory for TileMill is located at `~/.tilemill/node_modules`. It will not exist if you have not already installed a plugin. So you may need to create it yourself. You can create the plugins directory and install this plugin manually like:
+
+```sh
+mkdir -p ~/.tilemill/node_modules
+cd ~/.tilemill/node_modules
+git clone https://github.com/mapbox/tilemill-reference-layer.git
+```
 
 __Note:__ This plugin is not tested to work with other plugins.
 
