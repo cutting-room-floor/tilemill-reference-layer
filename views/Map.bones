@@ -44,14 +44,12 @@ view.prototype.render = function(init) {
     var basemap = (this.model.get('_basemap'));
     if (basemap) {
 
-        // If tilejson url stored, replace it with map ID
-        var mapID = basemap.match(/\/v\d\/(.*)\.json/);
-        if (mapID) {
-            basemap = mapID[1] || '';
-            this.model.set({ '_basemap': basemap });
+        //if a mapbox.com mapID is given, use that to construct the tileJSON url
+        //mapbox IDs are of the form 'account.mapid', where account and mapid can't contain url-reserved chars
+        if (basemap.match(/^[^/.]+\.[^/.]+$/)) {
+            basemap = this.model.mapboxTileJSON(basemap);
         }
 
-        basemap = this.model.tileJSON();
         wax.tilejson(basemap, _(function(tilejson) {
             // Insert remote map as a layer
             this.map.insertLayerAt(0, new wax.mm.connector(tilejson));

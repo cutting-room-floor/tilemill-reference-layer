@@ -1,6 +1,8 @@
 # Reference Layer for TileMill
 
-This TileMill plugin adds Mapbox Streets or a custom map as a reference layer to your TileMill projects.
+This TileMill plugin adds a custom map as a reference layer to your TileMill projects.
+
+This reference layer will be visible while designing & previewing a map, but will not be included in any exports.
 
 ## Installation
 
@@ -22,13 +24,15 @@ __Note:__ This plugin is not tested to work with other plugins.
 
 ![](https://f.cloud.github.com/assets/20300/1507626/eaeb09a2-4995-11e3-9bfb-038aa0547da3.png)
 
-- Go to a projects settings, and enter a map ID from your Mapbox.com map in the Mapbox Layer field.
+- Go to a projects settings, and enter a map ID from your Mapbox.com map, or a URL for a TileJSON Service, in the Reference Layer field.
 
 ![](https://f.cloud.github.com/assets/20300/1507627/ecdc5ed2-4995-11e3-824f-2a4fda01e9b8.png)
 
 - You can get the map ID from the Project settings on [Mapbox.com](https://www.mapbox.com/editor).
   
 ![](https://i.cloudup.com/FkgThf6MV4-3000x3000.png)
+
+- If you have a custom tileset available elsewhere, you'll need a TileJSON service to describe this map. You can use the URL of this service for the Reference Layer field.
 
 - Design a map with a transparent `Map` background
 
